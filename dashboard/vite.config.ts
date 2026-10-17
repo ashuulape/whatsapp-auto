@@ -1,6 +1,21 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+
+function getEnvValue(key: string, defaultValue: string): string {
+  if (process.env[key]) return process.env[key]!;
+  try {
+    const envPath = new URL('../.env', import.meta.url);
+    if (existsSync(envPath)) {
+      const content = readFileSync(envPath, 'utf-8');
+      const match = content.match(new RegExp(`^\\s*${key}\\s*=\\s*(?:["']?)([^"'\\r\\n]+)(?:["']?)`, 'm'));
+      if (match && match[1]) return match[1].trim();
+    }
+  } catch {
+    // Ignore reading errors and return default
+  }
+  return defaultValue;
+}
 
 // Single source of truth for the version shown in the dashboard: the ROOT package.json, which is
 // what a release bumps and what `npm run check:versions` gates. Resolved relative to this config
@@ -16,6 +31,10 @@ const { version: pkgVersion } = JSON.parse(
   version: string;
 };
 
+const apiPort = getEnvValue('PORT', '2785');
+const apiTarget = getEnvValue('VITE_API_URL', `http://localhost:${apiPort}`);
+const dashboardPort = parseInt(getEnvValue('DASHBOARD_PORT', '2886'), 10);
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
@@ -27,19 +46,19 @@ export default defineConfig({
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
   },
   server: {
-    port: 2886,
+    port: dashboardPort,
     proxy: {
       // With the trailing slash: Vite matches a plain key as a string prefix, so '/api' also
       // captured the SPA route /api-keys and a reload of that page went to the backend.
       '/api/': {
-        target: 'http://localhost:2785',
+        target: apiTarget,
         changeOrigin: true,
         secure: false,
       },
       // Proxy the WebSocket (socket.io) transport so the dashboard's real-time
       // chats/sessions streams work against the dev backend.
       '/socket.io': {
-        target: 'http://localhost:2785',
+        target: apiTarget,
         ws: true,
         changeOrigin: true,
       },
