@@ -65,12 +65,21 @@ RUN npm run build && npm run dashboard:ci -- --include=dev && npm run dashboard:
 # Same digest-pinned node:22-slim base as the builder stage.
 FROM docker.io/node:22-slim@sha256:43ac6c60b8f89723f746e8a92ce91abd5017e627ce1ddfe4238355d3a30b772c AS production
 
+# Identify the deployable image in local registries and OCI-aware tooling.
+LABEL org.opencontainers.image.title="OpenWA" \
+    org.opencontainers.image.description="Self-hosted WhatsApp API gateway with dashboard" \
+    org.opencontainers.image.source="https://github.com/rmyndharis/OpenWA" \
+    org.opencontainers.image.licenses="MIT"
+
 # Run the app with production defaults from the first boot: an unset NODE_ENV selects the
 # development branch of the CORS/Swagger/DTO-error-detail/default-secret hardening (main.ts
 # warns about exactly this case). Both compose files and the Helm chart already set it; a plain
 # `docker run` of this image did not. The npm installs below pin --omit=dev explicitly, so this
 # changes nothing about which dependencies land in the image.
 ENV NODE_ENV=production
+# Container listen port — must match EXPOSE/HEALTHCHECK and compose `PORT=2785`. Pin it here so a
+# host `.env` with a bare-metal PORT (e.g. one blocked on Windows Hyper-V) cannot leak into `docker run`.
+ENV PORT=2785
 
 # amd64 uses Chrome for Testing (downloaded below) to avoid the Debian chromium
 # package's K8s SIGTRAP under strict non-root/seccomp. arm64 installs Debian's

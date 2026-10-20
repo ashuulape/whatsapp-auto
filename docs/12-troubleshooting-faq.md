@@ -1245,6 +1245,10 @@ docker exec openwa-api curl http://host.docker.internal:8080
 >
 > A media burst adds roughly `INBOUND_MEDIA_CONCURRENCY` x `MEDIA_DOWNLOAD_MAX_BYTES` per session on top of that (4 x 50 MiB by default; about a third more on whatsapp-web.js, which holds each payload as base64). Set `INBOUND_MEDIA_GLOBAL_CONCURRENCY` to cap concurrent inbound media downloads across all sessions. On whatsapp-web.js a download that times out keeps its slot until Puppeteer fails the call (`PUPPETEER_PROTOCOL_TIMEOUT_MS`, 180 s by default), since it cannot be aborted.
 
+**Q: How do I run OpenWA on a low-memory machine?**
+
+> A: Prefer `ENGINE_TYPE=baileys` if it supports your required features; `whatsapp-web.js` runs a separate Chromium process tree for each active session. Set `MAX_CONCURRENT_SESSIONS=1` for a conservative starting point, and reduce media memory with `INBOUND_MEDIA_CONCURRENCY=1`, `INBOUND_MEDIA_GLOBAL_CONCURRENCY=1`, `MEDIA_DOWNLOAD_MAX_BYTES=10485760`, `MESSAGE_LIST_INLINE_MEDIA_BUDGET_BYTES=2097152`, `BODY_SIZE_LIMIT=10mb`, and `INFLIGHT_BODY_BUDGET_BYTES=20971520`. If inbound media is unnecessary, `MEDIA_DOWNLOAD_ENABLED=false` avoids downloading and buffering it. Media conversion is disabled by default; if enabled, set `MEDIA_CONVERSION_CONCURRENCY=1` and a suitable `MEDIA_CONVERSION_MAX_OUTPUT_BYTES`. These are tuning starting points, not guarantees: monitor actual memory under your workload, and keep persistent storage mounted at `/app/data`.
+
 **Q: Can I run 10+ sessions in one container? Will they get banned for sharing one IP?**
 
 > A: Yes: there is no session limit by default (`MAX_CONCURRENT_SESSIONS` sets one); the practical ceiling is RAM/CPU (see the table above). Sharing one IP across sessions is not itself a ban trigger: carrier NAT already puts hundreds of ordinary users on a single IP, so WhatsApp cannot treat a shared IP as a violation. Ten sessions on one residential IP behave like ten phones on one home WiFi. What actually matters:

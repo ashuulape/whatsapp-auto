@@ -53,7 +53,9 @@ export async function* iterateLocalFiles(localPath: string, prefix = ''): AsyncG
     }
 
     for (const entry of entries) {
-      const relativePath = dir ? path.join(dir, entry.name) : entry.name;
+      // Storage keys are portable API identifiers and always use POSIX separators, regardless
+      // of the host platform used to enumerate the local directory.
+      const relativePath = dir ? path.posix.join(dir.split(path.sep).join('/'), entry.name) : entry.name;
       if (entry.isDirectory()) {
         queue.push({ dir: relativePath, depth: depth + 1 });
       } else if (entry.isFile()) {

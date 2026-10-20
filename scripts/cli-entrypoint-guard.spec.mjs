@@ -2,7 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { tmpdir } from 'node:os';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 /**
  * Structural guard for the "gate that never ran" class of bug.
@@ -68,9 +69,9 @@ test('every guarded script compares a real path against the decoded module URL',
 test('the correct guard holds for a path that needs URL escaping', () => {
   // The concrete case the audit gate silently failed on. Proven here rather than asserted: a URL
   // built by hand from this path does not equal import.meta.url, while the resolved comparison does.
-  const spaced = '/tmp/openwa probe/check.mjs';
-  const asUrl = new URL(`file://${encodeURI(spaced)}`).href;
+  const spaced = join(tmpdir(), 'openwa probe', 'check.mjs');
+  const asUrl = pathToFileURL(spaced).href;
 
   assert.notEqual(asUrl, `file://${spaced}`, 'the hand-built URL should differ once the path is escaped');
-  assert.equal(resolve(fileURLToPath(asUrl)), spaced, 'the resolved comparison should still match');
+  assert.equal(resolve(fileURLToPath(asUrl)), resolve(spaced), 'the resolved comparison should still match');
 });

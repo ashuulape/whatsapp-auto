@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   sessionApi,
   webhookApi,
+  automationApi,
   templateApi,
   apiKeyApi,
   auditApi,
@@ -25,6 +26,7 @@ export const queryKeys = {
   sessionGroups: (sessionId: string) => ['sessions', sessionId, 'groups'] as const,
   sessionChats: (sessionId: string) => ['sessions', sessionId, 'chats'] as const,
   webhooks: ['webhooks'] as const,
+  automationRules: (sessionId: string) => ['sessions', sessionId, 'automationRules'] as const,
   templates: (sessionId: string) => ['sessions', sessionId, 'templates'] as const,
   apiKeys: ['apiKeys'] as const,
   logs: (params: { severity?: string; page: number; limit: number }) => ['logs', params] as const,
@@ -132,6 +134,47 @@ export function useDeleteWebhookMutation() {
 }
 
 // ── Template Queries ─────────────────────────────────────────────────────────
+
+export function useAutomationRulesQuery(sessionId: string, enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.automationRules(sessionId),
+    queryFn: () => automationApi.list(sessionId),
+    enabled: enabled && !!sessionId,
+    staleTime: 30_000,
+  });
+}
+
+export function useCreateAutomationRuleMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ sessionId, data }: { sessionId: string; data: Parameters<typeof automationApi.create>[1] }) =>
+      automationApi.create(sessionId, data),
+    onSuccess: (_rule, params) => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.automationRules(params.sessionId) });
+    },
+  });
+}
+
+export function useUpdateAutomationRuleMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (params: { sessionId: string; id: string; data: Parameters<typeof automationApi.update>[2] }) =>
+      automationApi.update(params.sessionId, params.id, params.data),
+    onSuccess: (_rule, params) => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.automationRules(params.sessionId) });
+    },
+  });
+}
+
+export function useDeleteAutomationRuleMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (params: { sessionId: string; id: string }) => automationApi.delete(params.sessionId, params.id),
+    onSuccess: (_result, params) => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.automationRules(params.sessionId) });
+    },
+  });
+}
 
 export function useTemplatesQuery(sessionId: string, enabled = true) {
   return useQuery({

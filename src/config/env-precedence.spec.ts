@@ -38,12 +38,17 @@ describe('isEnvPinned — does a layer above data/.env.generated supply this key
   // blank when the operator sets nothing. clearBlankEnv deletes it BEFORE the snapshot, so a stock stack
   // must not be told an environment variable is pinning anything.
   it('does not count a blank compose forward as a pin', () => {
-    const env: NodeJS.ProcessEnv = { ENGINE_TYPE: '', REDIS_ENABLED: '   ' };
+    const env: NodeJS.ProcessEnv = {
+      ENGINE_TYPE: '',
+      REDIS_ENABLED: '   ',
+      INFLIGHT_BODY_BUDGET_BYTES: '',
+    };
     clearBlankEnv(env, BLANK_SHADOWED_ENV_KEYS);
     recordPinnedEnvKeys(env);
 
     expect(isEnvPinned('ENGINE_TYPE')).toBe(false);
     expect(isEnvPinned('REDIS_ENABLED')).toBe(false);
+    expect(isEnvPinned('INFLIGHT_BODY_BUDGET_BYTES')).toBe(false);
   });
 
   it('counts a real value that merely repeats the default — the case BLANK_SHADOWED_ENV_KEYS cannot cover', () => {

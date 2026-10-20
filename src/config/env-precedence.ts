@@ -27,6 +27,7 @@ export const BLANK_SHADOWED_ENV_KEYS: string[] = [
   // the empty value shadows .env / data/.env.generated — which is why the gate above requires an
   // entry for each one.
   'MESSAGE_LIST_INLINE_MEDIA_BUDGET_BYTES',
+  'INFLIGHT_BODY_BUDGET_BYTES',
   'MEDIA_DOWNLOAD_ENABLED',
   'MEDIA_DOWNLOAD_MAX_BYTES',
   'MEDIA_DOWNLOAD_TIMEOUT_MS',

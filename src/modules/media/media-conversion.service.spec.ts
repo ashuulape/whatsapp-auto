@@ -315,6 +315,30 @@ describe('MediaConversionService', () => {
   });
 
   describe('concurrency gate', () => {
+    it('does not resolve URL inputs until a conversion slot is available', async () => {
+      const load = jest
+        .spyOn(loadRemoteMedia, 'loadRemoteMediaBuffer')
+        .mockResolvedValue({ data: Buffer.from('remote-audio'), mimetype: 'audio/mpeg' });
+      const service = makeService(config({ 'mediaConversion.concurrency': 1 }));
+      let release!: () => void;
+      runFfmpeg.mockImplementationOnce(
+        () =>
+          new Promise<Buffer>(resolve => {
+            release = () => resolve(Buffer.from('first'));
+          }),
+      );
+
+      const active = service.convertToVoice(SESSION, { base64: 'AAAA' });
+      await new Promise(resolve => setImmediate(resolve));
+      const queued = service.convertToVoice(SESSION, { url: 'https://example.com/note.m4a' });
+      await new Promise(resolve => setImmediate(resolve));
+
+      expect(load).not.toHaveBeenCalled();
+      release();
+      await Promise.all([active, queued]);
+      expect(load).toHaveBeenCalledTimes(1);
+    });
+
     // The rate limiter caps admission per second, not how many long-running ffmpeg processes stack
     // up while each runs toward its timeout — that bound lives here.
     it('bounds concurrent ffmpeg runs and answers 503 past the queue instead of stacking processes', async () => {

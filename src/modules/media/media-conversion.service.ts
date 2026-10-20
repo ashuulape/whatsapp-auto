@@ -97,18 +97,19 @@ export class MediaConversionService implements OnApplicationShutdown {
     outputMimetype: string,
   ): Promise<ConvertedMedia> {
     await this.assertAvailable();
-    const input = await this.resolveInput(sessionId, dto);
-
     try {
-      const output = await this.ffmpegGate.run(() =>
-        runFfmpeg(input, 'bin', outputExtension, encodeArgs, {
+      return await this.ffmpegGate.run(async () => {
+        // Admit before fetching or decoding: queued requests retain their DTO, not another full
+        // input Buffer, so a burst cannot turn the short conversion queue into a heap of media.
+        const input = await this.resolveInput(sessionId, dto);
+        const output = await runFfmpeg(input, 'bin', outputExtension, encodeArgs, {
           ffmpegPath: this.configService.get<string>('mediaConversion.ffmpegPath', 'ffmpeg'),
           timeoutMs: this.configService.get<number>('mediaConversion.timeoutMs', 60_000),
           maxOutputBytes: this.configService.get<number>('mediaConversion.maxOutputBytes', 50 * 1024 * 1024),
-        }),
-      );
-      this.logger.log('Media converted', { inputBytes: input.length, outputBytes: output.length, outputMimetype });
-      return { base64: output.toString('base64'), mimetype: outputMimetype, bytes: output.length };
+        });
+        this.logger.log('Media converted', { inputBytes: input.length, outputBytes: output.length, outputMimetype });
+        return { base64: output.toString('base64'), mimetype: outputMimetype, bytes: output.length };
+      });
     } catch (error) {
       if (error instanceof Error && error.message === 'ConcurrencyLimiter queue full') {
         throw new ServiceUnavailableException('Media conversion is busy — retry shortly');

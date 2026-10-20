@@ -1,0 +1,318 @@
+.auto-replies-page {
+  width: 100%;
+  padding: 2rem;
+  overflow-x: hidden;
+}
+
+.auto-replies-page .auto-replies-session-select {
+  min-width: 240px;
+}
+
+.auto-replies-page .auto-replies-intro,
+.auto-replies-page .auto-reply-card,
+.auto-replies-page .auto-replies-state {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-white);
+  box-shadow: var(--shadow-sm);
+}
+
+.auto-replies-page .auto-replies-intro {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(120deg, var(--primary-soft), var(--bg-white) 68%);
+}
+
+.auto-replies-page .auto-replies-intro-icon {
+  display: grid;
+  flex: 0 0 46px;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--primary);
+  color: white;
+}
+
+.auto-replies-page .auto-replies-intro h2,
+.auto-replies-page .auto-replies-intro p,
+.auto-replies-page .auto-reply-card h2,
+.auto-replies-page .auto-reply-response p {
+  margin: 0;
+}
+
+.auto-replies-page .auto-replies-intro h2 {
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.auto-replies-page .auto-replies-intro p {
+  max-width: 650px;
+  margin-top: 0.25rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.auto-replies-page .auto-replies-intro > button {
+  flex: 0 0 auto;
+  margin-inline-start: auto;
+}
+
+.auto-replies-page .auto-replies-list {
+  display: grid;
+  gap: 0.875rem;
+}
+
+.auto-replies-page .auto-reply-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  transition: opacity 0.15s ease, border-color 0.15s ease;
+}
+
+.auto-replies-page .auto-reply-card.disabled {
+  opacity: 0.72;
+}
+
+.auto-replies-page .auto-reply-card-main {
+  display: grid;
+  min-width: 0;
+  gap: 0.625rem;
+}
+
+.auto-replies-page .auto-reply-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.auto-replies-page .auto-reply-card-heading h2 {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 1rem;
+  text-overflow: ellipsis;
+}
+
+.auto-replies-page .auto-reply-status {
+  flex: 0 0 auto;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: var(--bg-light);
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+.auto-replies-page .auto-reply-status.enabled {
+  background: var(--primary-soft);
+  color: var(--primary-text);
+}
+
+.auto-replies-page .auto-reply-trigger {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+}
+
+.auto-replies-page .auto-reply-trigger code {
+  padding: 0.1rem 0.375rem;
+  border-radius: 4px;
+  background: var(--bg-light);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.auto-replies-page .auto-reply-trigger strong {
+  overflow: hidden;
+  max-width: 360px;
+  color: var(--primary-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auto-replies-page .auto-reply-response {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  max-width: 820px;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.auto-replies-page .auto-reply-response svg {
+  flex: 0 0 auto;
+  margin-top: 0.15rem;
+  color: var(--primary-text);
+}
+
+.auto-replies-page .auto-reply-response p {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.auto-replies-page .auto-reply-card-main small {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.auto-replies-page .auto-reply-card-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.auto-replies-page .auto-reply-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  white-space: nowrap;
+}
+
+.auto-replies-page .auto-replies-state {
+  display: flex;
+  min-height: 240px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.auto-replies-page .auto-replies-state h3,
+.auto-replies-page .auto-replies-state p {
+  margin: 0;
+}
+
+.auto-replies-page .auto-replies-state h3 {
+  color: var(--text-secondary);
+}
+
+.auto-replies-page .auto-replies-state p {
+  max-width: 480px;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.auto-replies-page.auto-replies-loading {
+  display: flex;
+  min-height: 400px;
+  align-items: center;
+  justify-content: center;
+}
+
+.auto-replies-page .auto-reply-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.auto-replies-page .auto-reply-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.auto-replies-page .auto-reply-form input,
+.auto-replies-page .auto-reply-form select,
+.auto-replies-page .auto-reply-form textarea {
+  width: 100%;
+  min-height: 42px;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-light);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.auto-replies-page .auto-reply-form textarea {
+  min-height: 120px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.auto-replies-page .auto-reply-form input:focus,
+.auto-replies-page .auto-reply-form select:focus,
+.auto-replies-page .auto-reply-form textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: var(--bg-white);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.auto-replies-page .auto-reply-trigger-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 0.45fr);
+  gap: 0.875rem;
+}
+
+.auto-replies-page .auto-reply-hint {
+  margin: -0.6rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+@media (max-width: 900px) {
+  .auto-replies-page {
+    padding: 1rem;
+  }
+
+  .auto-replies-page .auto-replies-session-select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .auto-replies-page .auto-reply-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .auto-replies-page .auto-reply-card-actions {
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 640px) {
+  .auto-replies-page .auto-replies-intro {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 1rem;
+  }
+
+  .auto-replies-page .auto-replies-intro > div:nth-child(2) {
+    flex: 1 1 calc(100% - 64px);
+  }
+
+  .auto-replies-page .auto-replies-intro > button {
+    width: 100%;
+    margin-inline-start: 0;
+  }
+
+  .auto-replies-page .auto-reply-trigger-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .auto-replies-page .auto-reply-card {
+    padding: 1rem;
+  }
+}

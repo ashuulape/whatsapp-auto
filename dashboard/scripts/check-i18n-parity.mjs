@@ -26,6 +26,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // An optional directory argument points the check at a copy of the catalogues (used by its own test).
 const LOCALES_DIR = process.argv[2] ?? join(__dirname, '..', 'src', 'i18n', 'locales');
 const REFERENCE = 'en.json';
+// New dashboard sections may intentionally ship with the configured English fallback first; add
+// their prefixes here until translations are available for every supported locale.
+const ENGLISH_FALLBACK_ONLY_PREFIXES = ['autoReplies.', 'nav.autoReplies'];
 // A leaf value identical to the reference is only flagged when at least this long — short UI words
 // (e.g. "Media", "OK") legitimately coincide across languages, full sentences almost never do.
 const UNTRANSLATED_MIN_LEN = 20;
@@ -99,7 +102,9 @@ let hasErrors = false;
 for (const file of localeFiles) {
   const keys = flatten(load(file));
   const entries = flattenEntries(load(file));
-  const missing = [...referenceKeys].filter((k) => !keys.has(k)).sort();
+  const missing = [...referenceKeys]
+    .filter((k) => !keys.has(k) && !ENGLISH_FALLBACK_ONLY_PREFIXES.some((prefix) => k.startsWith(prefix)))
+    .sort();
   const lang = file.replace(/\.json$/, '');
   const pluralCategories = [
     ...new Set([

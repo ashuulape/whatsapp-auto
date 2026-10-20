@@ -176,6 +176,16 @@ test('parsePythonTypes: TypedDict totals, NotRequired, aliased Literal enums, in
   assert.equal(types.Session.lastError.token, 'string|null');
 });
 
+test('parsePythonTypes: recognizes ordinary TypedDict classes in the repository', () => {
+  const types = parsePythonTypes(`
+# A comment with an unmatched bracket [ should not hide following classes.
+class Request(TypedDict):
+    sessionId: str
+    text: str
+`);
+  assert.deepEqual(Object.keys(types.Request), ['sessionId', 'text']);
+});
+
 test('parseGoTypes: omitempty optionality, pointer nullability, const-block enums, required slices', () => {
   const src = [
     'type Kind string',

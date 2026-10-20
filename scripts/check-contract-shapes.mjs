@@ -717,6 +717,7 @@ export function comparePair(handName, handMembers, schemaName, schema, schemas, 
  * TypedDict inheritance (the parent's own total flag governs its members).
  */
 export function parsePythonTypes(source) {
+  const classSource = source;
   // Join continuation lines inside unclosed brackets so multi-line Literal[...] aliases and
   // annotations parse as one token (a truncated `Literal[` is worse than no token).
   const joined = [];
@@ -762,7 +763,7 @@ export function parsePythonTypes(source) {
     }
     dicts[name] = members;
   }
-  const blocks = [...source.matchAll(/class (\w+)\(([^)]*)\):\n([\s\S]*?)(?=\nclass |\n[A-Z]\w+ = |\n*$)/g)];
+  const blocks = [...classSource.matchAll(/class (\w+)\(([^)]*)\):\r?\n([\s\S]*?)(?=\r?\nclass |\r?\n[A-Z]\w+ = |\r?\n*$)/g)];
   // A subclass never re-mentions TypedDict — accept any class whose base chain reaches one
   // (fixpoint: a class is rooted when a base is itself a rooted class).
   const basesOf = Object.fromEntries(
@@ -774,7 +775,7 @@ export function parsePythonTypes(source) {
         .filter(x => x && x !== 'TypedDict' && !x.includes('=')),
     ]),
   );
-  let rooted = new Set(blocks.filter(([, , b]) => /(^|\W)TypedDict(\W|$)/.test(b)).map(([, n]) => n));
+  let rooted = new Set(blocks.filter(([, , bases]) => /(^|\W)TypedDict(\W|$)/.test(bases)).map(([, n]) => n));
   let grew = true;
   while (grew) {
     grew = false;
